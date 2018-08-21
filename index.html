@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>JS GCS</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+
+	<link rel="stylesheet" href="Leaflet.contextmenu/dist/leaflet.contextmenu.css"/>
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==" crossorigin=""></script>
+	<script src="Leaflet.contextmenu/dist/leaflet.contextmenu.js"></script>
+
+	
+</head>
+<body>
+
+<div id="mapid" style="width: 800px; height: 500px;"></div>
+
+<div id="modesec" style="margin:10px">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#waypointModal" data-whatever="@mdo">Load waypoints</button>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#geofenceModal" data-whatever="@mdo">Load gefoence</button>
+	<div class="modal fade" id="waypointModal" tabindex="-1" role="dialog" aria-labelledby="waypointModalLabel" aria-hidden="true">>
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content ">
+			<div class="modal-header">
+				<h5 class="modal-title" id="waypointModalLabel">Flightplan data</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>	
+				<div class="col-md-11">
+				<div class="field-names row">
+					<div class="col-sm-2 text-center">
+						<label for="wpid_label" class="row-form-label">ID&ensp;&ensp;</label>
+					</div>
+
+					<div class="col-sm-2 text-center">
+						<label  for="wpid_label" class="row-form-label text-center">Latitude&ensp;</label>
+					</div>
+
+					<div class="col-sm-2 text-center">
+						<label for="wpid_label" class="row-form-label text-center">Longitude</label>
+					</div>
+
+					<div class="col-sm-2 text-center">
+						<label for="wpid_label" class="row-form-label text-center">Altitude</label>
+					</div>
+
+					<div class="col-sm-2 text-center">
+						<label for="wpid_label" class="row-form-label text-center">Speed</label>
+					</div>
+				</div>
+				</div>	
+				<div class="waypoint_info row">
+					<div class="waypoints col-md-11">
+						<div class="data-entry-wp0 row">
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="wpid">
+							</div>
+
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="0.01" class="form-control form-control-sm"  id="lat">
+							</div>
+
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="0.01" class="form-control form-control-sm"  id="lon">
+							</div>
+
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm"  id="alt">
+							</div>
+
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="0.5" class="form-control form-control-sm " id="speed">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div style="padding-left:15px;padding-top:10px">
+						<button type="button" class="btn btn-primary btn-sm add-new-waypoint">+</button>
+						<small>New waypoint</small>
+					</div>
+				</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sendbtnclick()">Send</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+			</div>
+		</div>
+	</div>
+   
+	<div class="modal fade" id="geofenceModal" tabindex="-1" role="dialog" aria-labelledby="geofenceModalLabel" aria-hidden="true">>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="geofenceModalLabel">Geofence data</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-sm-2">
+									<label for="gfid_label" class="row-form-label text-center">&ensp;Id&ensp;</label>	
+							</div>
+							<div class="col-sm-2">
+									<label for="gf_totalN_label" class="row-form-label text-center">vertices</label>	
+							</div>
+							<div class="col-sm-2">
+									<label for="gf_type_label" class="row-form-label text-center">type</label>	
+							</div>
+							<div class="col-sm-2">
+									<label for="gf_floor_label" class="row-form-label text-center">floor</label>	
+							</div>
+							<div class="col-sm-2">
+									<label for="gf_roof_label" class="row-form-label text-center">ceiling</label>	
+							</div>
+						</div>	
+						<div class="row">
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="fp_id">
+							</div>
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="fp_vertices">
+							</div>
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="fp_type">
+							</div>
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="fp_floor">
+							</div>
+							<div class="col-sm-2">
+								<input style="font-size:10px;" type="number" step="1" class="form-control form-control-sm" id="fp_roof">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sendbtnclick()">Draw</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+<script src="map.js"></script>
+<script src="TestMoveCopter.js"></script>
+<script src="GeoUtils/GeoUtils.js"></script>
+<script>
+
+var position = [51.508,-0.11]
+var velocity = [10.0,0.0]
+
+var modalFpLength = 1;
+
+var vehicle = new Copter([0.0,0.0],velocity)
+
+function updateVehiclePosition(copter,vIcon,initialPosition){
+	//copter.move();
+	//var xyzPosition = copter.position;
+	//var gpsPosition = GpsOffset(initialPosition[0],initialPosition[1],xyzPosition[0],xyzPosition[1]);
+	//var vIconPosition = L.latLng(position[0],position[1]); 
+	//acMarker.setLatLng(vIconPosition)
+    //console.log(gpsPosition.toString());
+}
+
+updateVehiclePosition(vehicle,vIcon,position);
+
+setInterval(updateVehiclePosition,100,vehicle,vIcon,position);
+</script>
+<script>
+$('#waypointModal').on('show.bs.modal', function (event) {
+	var button = $(event.relatedTarget) // Button that triggered the modal
+	var recipient = button.data('whatever') // Extract info from data-* attributes
+	// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+	var modal = $(this)
+
+
+	var waypoint_data = $('.waypoint_info');
+	var waypoint_row_container = waypoint_data.find('.col-md-11');
+	var waypoint_row = waypoint_row_container.find('.data-entry-wp0');
+
+	var waypointIndex = 0;
+    flightplan.forEach(function(element){
+		if(waypointIndex > 0){
+			waypoint_row_container.find('.data-entry-wp'+String(waypointIndex)).remove();
+			waypoint_row_container.append('<div class=\'data-entry-wp'+String(waypointIndex)+' row\'>'+waypoint_row.html()+'</div>');	
+		}
+		var waypointDataField = modal.find('.data-entry-wp'+String(waypointIndex));
+		waypointDataField.find('#wpid').val(waypointIndex);
+		waypointDataField.find('#lat').val(element.latlng[0]);
+		waypointDataField.find('#lon').val(element.latlng[1]);
+		waypointIndex++;
+	});
+	//console.log($('.waypoints').children().length);
+  })
+
+$('#waypointModal').on('hidden.bs.modal', function (event){
+	var modal = $(this);
+
+	console.log('modal is hidden');
+	console.log('modal length:'+String(modalFpLength));
+	UpdateFlightPlanFromModal(modal);
+})
+
+function UpdateFlightPlanFromModal(modal){
+	for(i=0;i<modalFpLength;++i){
+		var waypointDataField = modal.find('.data-entry-wp'+String(i));
+		var wpid = parseInt(waypointDataField.find('#wpid').val());
+		var lat = parseFloat(waypointDataField.find('#lat').val());
+		var lng = parseFloat(waypointDataField.find('#lon').val());
+		console.log(typeof wpid);
+		if(!isNaN(wpid)){
+			if(flightplan.length-1 >= i){
+				flightplan[i].latlng[0] = lat;
+				flightplan[i].latlng[1] = lng;
+				flightplan[i].marker.setLatLng(L.latLng(lat,lng));
+			}else{
+				var marker = L.marker(L.latLng(lat,lng),{
+				contextmenu: true,
+				contextmenuItems: [{
+					text: 'remove',
+					callback: RemoveWaypoint
+				}, {
+					text: 'move',
+				}],
+				contextmenuInheritItems: false
+				}).addTo(mymap);
+				marker.bindPopup(String(lat.toFixed(4))+','+String(lng.toFixed(4)));
+				wp = new Waypoint(waypointIndex,[lat,lng],marker);
+				flightplan.push(wp);
+				waypointIndex++;
+			}
+		}
+	}
+}
+
+function sendbtnclick(){
+	var modal = $('#waypointModal');
+	console.log("Send button clicked");
+	UpdateFlightPlanFromModal(modal);
+	// Send flight plan to server;
+}
+
+$('.add-new-waypoint').on('click',function(){
+
+	var waypoint_data = $('.waypoint_info');
+	var waypoint_row_container = waypoint_data.find('.waypoints');
+	var waypoint_row = waypoint_row_container.find('.data-entry-wp0');
+	waypoint_row_container.append('<div class=\'data-entry-wp'+String(modalFpLength)+' row\'>'+waypoint_row.html()+'</div>');
+	modalFpLength++;
+	
+})
+
+</script>
+</body>
+</html>
