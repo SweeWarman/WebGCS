@@ -81,7 +81,8 @@ function RemoveWaypoint(e){
 }
 
 function AddGeofence(e){
-    
+   $('#geofenceModal').modal('show'); 
+   console.log('exited');
 }
 
 function ConstructFence(e){
