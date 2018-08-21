@@ -1,0 +1,3 @@
+[submodule "Leaflet.contextmenu"]
+	path = Leaflet.contextmenu
+	url = https://github.com/aratcliffe/Leaflet.contextmenu.git
